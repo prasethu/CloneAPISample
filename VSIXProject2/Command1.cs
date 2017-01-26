@@ -117,8 +117,13 @@ namespace VSIXProject2
                 Progress<ServiceProgressData> progress = new Progress<ServiceProgressData>();
 
                 string tempFolder = Path.GetTempPath();
-                gitExtensibility.CloneAsync("https://github.com/github/VisualStudio.git", Path.Combine(tempFolder, Guid.NewGuid().ToString()), false, default(CancellationToken), progress);
-                progress.ProgressChanged += ProgressChangedHandler;
+
+                ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+                {
+                    progress.ProgressChanged += ProgressChangedHandler;
+
+                    await gitExtensibility.CloneAsync("https://github.com/github/VisualStudio.git", Path.Combine(tempFolder, Guid.NewGuid().ToString()), false, default(CancellationToken), progress);
+                });
             }
         }
 
